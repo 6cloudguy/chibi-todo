@@ -38,6 +38,27 @@ function withWidgetManifest(config) {
       }],
     }, receiverName);
 
+    application.service = application.service ?? [];
+    ensureComponent(application.service, {
+      $: {
+        "android:name": `${androidPackage}.MomoOverlayService`,
+        "android:exported": "false",
+        "android:foregroundServiceType": "specialUse",
+      },
+      property: [{
+        $: {
+          "android:name": "android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE",
+          "android:value": "Displays a user-requested, draggable Momo companion overlay.",
+        },
+      }],
+    }, `${androidPackage}.MomoOverlayService`);
+
+    const permissions = manifestConfig.modResults.manifest["uses-permission"] ?? [];
+    ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"].forEach((permission) => {
+      if (!permissions.some((item) => item.$?.["android:name"] === permission)) permissions.push({ $: { "android:name": permission } });
+    });
+    manifestConfig.modResults.manifest["uses-permission"] = permissions;
+
     return manifestConfig;
   });
 }
@@ -85,7 +106,7 @@ function withChibiWidget(config) {
     const appMain = path.join(androidRoot, "app", "src", "main");
     const kotlinDirectory = path.join(appMain, "java", ...androidPackage.split("."));
 
-    ["ChibiWidgetModule.kt", "ChibiWidgetPackage.kt", "ChibiWidgetProvider.kt"].forEach((file) => {
+    ["ChibiWidgetModule.kt", "ChibiWidgetPackage.kt", "ChibiWidgetProvider.kt", "MomoOverlayService.kt"].forEach((file) => {
       writeTemplate(path.join(nativeSource, "kotlin", file), path.join(kotlinDirectory, file), androidPackage);
     });
     copyDirectory(path.join(nativeSource, "res"), path.join(appMain, "res"));
@@ -104,4 +125,4 @@ function withChibiWidget(config) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.2.0");
+module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.3.0");

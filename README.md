@@ -11,7 +11,8 @@ Momo's Day is a local-first **Expo + React Native + TypeScript** to-do app with 
 | To-do app | Create, complete, delete, and persist tasks locally. The Today screen separates active and completed tasks and shows real progress. |
 | Companion | Seven mood states, non-repeating supportive messages, companion mood selection, and replaceable PNG artwork. |
 | Personalization | Local-only companion and nickname fields, color mood choice, personality choice, custom messages, and a next-task widget preference. |
-| Android widget | Standard launcher-picker discovery, direct placement, compact and expanded layouts, chibi-tap mood changes, a dedicated pet-play action, app-open message action, resize support, preview, and app-widget updates. |
+| Android widget | Standard launcher-picker discovery, direct placement, compact chibi-and-speech-bubble presentation, chibi-tap mood changes, preview, and app-widget updates. |
+| Desktop pet | Optional user-granted Android overlay that docks at bottom centre on unlock, can be dragged freely over the launcher, and reacts with artwork swaps and speech bubbles. |
 | Native integration | Config plugin plus native Kotlin bridge keep Android widget code isolated from the React Native UI while preserving Expo prebuild workflow. |
 
 ## Run the JavaScript App
@@ -49,11 +50,15 @@ For an EAS build, open the completed build's download link or scan its installat
 
 ## Add the Chibi Widget
 
-After installing the APK, go to the Android home screen. Long-press an empty area, open **Widgets**, find **Momo's Day**, and place **Momo Companion**. The widget now places directly from the picker. Tap Momo to change expression and message, tap **pet Momo** for small companion reactions, and tap the message to open the to-do app. Long-press the placed widget to use Android's standard launcher drag mode and move it around your home screen.
+After installing the APK, go to the Android home screen. Long-press an empty area, open **Widgets**, find **Momo's Day**, and place **Momo Companion**. The widget now uses a small chibi-and-speech-bubble presentation rather than a large task card. Tap Momo to change expression and message; tap the bubble to open the app. The launcher still controls the widget's grid position.
 
 > **Important:** The direct-placement and HyperOS receiver fixes are native Android code. `pnpm android` now runs a clean Expo prebuild before compiling, so the config-plugin changes are included in the new APK. Do not use `pnpm android:fast` for this fix; it reuses the current native folder. If HyperOS still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
 
-Android launcher widgets are intended to present concise, glanceable content and can be resized by the user when the provider supports it. Momo's Day declares horizontal and vertical resizing and selects an expanded layout as more horizontal room becomes available. [3]
+## Turn On the Free-Roaming Desktop Pet
+
+The draggable companion is intentionally separate from the launcher widget. Open **Settings** in Momo's Day, find **Desktop Pet · Android**, and turn on **Let Momo roam**. HyperOS will open its special permission page; allow **Display over other apps**, return to Momo's Day, and turn the setting on once more. Momo appears at the bottom centre after an unlock, can be dragged anywhere, and changes mood/message when tapped.
+
+> The desktop pet uses an Android overlay service, so a small persistent notification is expected. HyperOS can stop overlays in aggressive battery modes. If Momo disappears, allow background pop-ups where offered, remove battery restrictions for Momo's Day, and re-enable **Let Momo roam**. Standard widgets cannot freely walk between launcher grid cells or run continuous animations; the overlay is the supported option for that behavior. [3] [4]
 
 ## Replace Chibi Assets
 
@@ -71,7 +76,7 @@ The main application uses `AsyncStorage` for detailed local tasks and settings. 
 
 ## Validation and Known Limits
 
-`pnpm check` validates the TypeScript project. `pnpm test` runs deterministic tests for mood cycling, message selection, and widget snapshot construction. Android prebuild has been run successfully and generated the widget declarations, layouts, provider, Kotlin bridge, and direct-placement widget metadata.
+`pnpm check` validates the TypeScript project. `pnpm test` runs deterministic tests for mood cycling, message selection, and widget snapshot construction. Android prebuild has been run successfully and generated the compact widget, overlay service, permissions, native bridge, and launcher-facing metadata.
 
 This environment does not include an Android SDK, so a local Gradle APK compilation could not be completed here. Build the project on a machine with Android Studio/Android SDK installed or use the EAS cloud build path above. The widget does not support marking a task complete directly from the launcher in this MVP; tasks are mutated in the app, and the widget reflects the resulting state after sync.
 
@@ -80,3 +85,4 @@ This environment does not include an Android SDK, so a local Gradle APK compilat
 [1]: https://docs.expo.dev/develop/development-builds/introduction/ "Expo — Introduction to development builds"
 [2]: https://docs.expo.dev/guides/adopting-prebuild/ "Expo — Adopt Prebuild"
 [3]: https://developer.android.com/develop/ui/views/appwidgets/overview "Android Developers — App widgets overview"
+[4]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"

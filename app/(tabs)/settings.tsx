@@ -1,11 +1,12 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { haptic } from "@/lib/haptics";
 import type { AppSettings } from "@/lib/models";
 import { useTasks } from "@/lib/task-context";
+import { desktopPetEnabled, desktopPetPermissionGranted, openDesktopPetPermissionSettings, startDesktopPet, stopDesktopPet } from "@/lib/widget-bridge";
 
 const themes: { value: AppSettings["favoriteColor"]; label: string; color: string }[] = [
   { value: "strawberry", label: "Strawberry", color: "#F4A6AF" },
@@ -18,6 +19,26 @@ const personalities: AppSettings["personality"][] = ["gentle", "playful", "suppo
 export default function SettingsScreen() {
   const { settings, updateSettings } = useTasks();
   const [messageDraft, setMessageDraft] = useState("");
+  const [desktopPetOn, setDesktopPetOn] = useState(false);
+
+  useEffect(() => {
+    void desktopPetEnabled().then(setDesktopPetOn);
+  }, []);
+
+  const toggleDesktopPet = async (enabled: boolean) => {
+    haptic.medium();
+    if (!enabled) {
+      await stopDesktopPet();
+      setDesktopPetOn(false);
+      return;
+    }
+    if (!(await desktopPetPermissionGranted())) {
+      await openDesktopPetPermissionSettings();
+      return;
+    }
+    await startDesktopPet();
+    setDesktopPetOn(true);
+  };
 
   const updateText = (key: "girlfriendName" | "chibiName", value: string) => updateSettings({ [key]: value });
   const addMessage = () => {
@@ -54,6 +75,14 @@ export default function SettingsScreen() {
             <View style={styles.settingCopy}><Text style={styles.settingTitle}>Show my next task</Text><Text style={styles.settingBody}>Keep a tiny reminder below the companion.</Text></View>
             <Switch value={settings.showTasksOnWidget} onValueChange={(value) => { haptic.medium(); updateSettings({ showTasksOnWidget: value }); }} trackColor={{ false: "#E7D6DA", true: "#F2A8B3" }} thumbColor="#FFFFFF" accessibilityLabel="Show next task on widget" />
           </View>
+        </View>
+        <SectionTitle label="DESKTOP PET · ANDROID" />
+        <View style={styles.card}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingCopy}><Text style={styles.settingTitle}>Let Momo roam</Text><Text style={styles.settingBody}>A draggable companion with speech bubbles. HyperOS asks for display-over-other-apps permission the first time.</Text></View>
+            <Switch value={desktopPetOn} onValueChange={(value) => { void toggleDesktopPet(value); }} trackColor={{ false: "#E7D6DA", true: "#F2A8B3" }} thumbColor="#FFFFFF" accessibilityLabel="Turn on draggable desktop pet" />
+          </View>
+          <Text style={styles.overlayHint}>When the phone is unlocked, Momo returns to bottom centre. Drag Momo anywhere, or tap her for a tiny reaction.</Text>
         </View>
         <SectionTitle label="PERSONALITY" />
         <View style={styles.personalityRow}>
@@ -111,5 +140,6 @@ const styles = StyleSheet.create({
   customMessage: { minHeight: 45, paddingHorizontal: 13, borderRadius: 14, backgroundColor: "#FFF0F2", flexDirection: "row", alignItems: "center", gap: 8 },
   customMessageText: { flex: 1, color: "#79525D", fontSize: 13, lineHeight: 18, fontWeight: "600" },
   emptyMessages: { color: "#96727B", fontSize: 13, lineHeight: 19, marginTop: 10 },
+  overlayHint: { color: "#96727B", fontSize: 12, lineHeight: 18, paddingBottom: 15, marginTop: -8 },
   pressed: { opacity: 0.65 },
 });

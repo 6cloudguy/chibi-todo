@@ -28,3 +28,7 @@
 - [x] Apply a compatibility fix and provide a fresh-install verification workflow
 - [x] Fix launcher binding of the visible widget provider by correcting exported receiver metadata
 - [x] Make the launcher widget provider explicitly exported for HyperOS compatibility and rebuild locally
+- [x] Replace the 3×3 card widget with an art-first chibi companion presentation
+- [x] Add speech-bubble messages and animation-like companion interaction states
+- [x] Assess and document Android/HyperOS limits on free-roaming home-screen companions and launcher-open triggers
+- [x] Add a user-granted draggable overlay pet option with bottom-centre unlock docking

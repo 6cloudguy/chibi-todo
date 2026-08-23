@@ -8,8 +8,14 @@ The subsequent HyperOS test confirms that the launcher can display the widget pr
 
 Android launcher widgets cannot provide freeform drag gestures inside their RemoteViews. The launcher owns drag-and-drop movement of the widget itself; widgets support touch interactions and, where applicable, vertical scrolling. The pet interaction will therefore use an explicit, launcher-safe touch zone that cycles pet pose, energy, and message. Users can still long-press and move the widget using the normal launcher behavior. [3]
 
+Android widget size is controlled by the launcher grid through provider sizing metadata. An art-first widget can request a small 1×1 target cell and render a transparent-looking image and small speech bubble, but it cannot choose a free pixel position, walk outside its allocated cell, or run continuous animation inside `RemoteViews`. [4]
+
+A true free-roaming desktop pet is architecturally different from a widget: it requires an application overlay window. Android documents `TYPE_APPLICATION_OVERLAY` as requiring `SYSTEM_ALERT_WINDOW`; the system can move, resize, or hide overlays and adjusts the host process importance. Such an overlay needs a user-granted special permission and is less reliable on aggressive device-specific background managers, including HyperOS. The widget redesign will therefore deliver the safe art-first companion now, with an overlay pet treated as an optional, clearly permissioned later feature. [5]
+
 ## References
 
 [1]: https://developer.android.com/develop/ui/views/appwidgets "Android Developers — Create a simple widget"
 [2]: https://developer.android.com/develop/ui/views/appwidgets/configuration "Android Developers — Enable users to configure app widgets"
 [3]: https://developer.android.com/develop/ui/views/appwidgets/overview "Android Developers — App widgets overview"
+[4]: https://developer.android.com/develop/ui/views/appwidgets/layouts "Android Developers — Provide flexible widget layouts"
+[5]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"
