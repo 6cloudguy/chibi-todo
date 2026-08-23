@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
-import { useEffect, useState } from "react";
+import { Animated, Easing, Keyboard, Modal, Platform, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
 
 import { haptic } from "@/lib/haptics";
 
@@ -13,6 +13,7 @@ type AddTaskSheetProps = {
 export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!visible) {
@@ -20,6 +21,35 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
       setNote("");
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (!visible) {
+      keyboardOffset.setValue(0);
+      return;
+    }
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const show = Keyboard.addListener(showEvent, (event) => {
+      Animated.timing(keyboardOffset, {
+        toValue: event.endCoordinates.height,
+        duration: Platform.OS === "ios" ? event.duration ?? 250 : 180,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    });
+    const hide = Keyboard.addListener(hideEvent, (event) => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: Platform.OS === "ios" ? event.duration ?? 200 : 160,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    });
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, [keyboardOffset, visible]);
 
   const save = () => {
     if (!title.trim()) return;
@@ -29,11 +59,11 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
   };
 
   return (
-    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalRoot}>
+    <Modal animationType="fade" statusBarTranslucent navigationBarTranslucent transparent visible={visible} onRequestClose={onClose}>
+      <View style={styles.modalRoot}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.sheet}>
+      <Animated.View style={[styles.sheet, { transform: [{ translateY: Animated.multiply(keyboardOffset, -1) }] }]}>
         <View style={styles.handle} />
         <View style={styles.topRow}>
           <Text style={styles.heading}>A tiny plan</Text>
@@ -68,9 +98,9 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
           <Text style={styles.saveText}>Add to today</Text>
           <MaterialIcons name="arrow-forward" size={19} color="#FFFFFF" />
         </Pressable>
-      </View>
+      </Animated.View>
       </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
@@ -78,7 +108,7 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
 const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(57, 34, 42, 0.32)" },
   modalRoot: { flex: 1, justifyContent: "flex-end" },
-  sheet: { borderTopLeftRadius: 30, borderTopRightRadius: 30, backgroundColor: "#FFF9F5", padding: 22, paddingBottom: 34 },
+  sheet: { position: "absolute", bottom: 0, left: 0, right: 0, borderTopLeftRadius: 30, borderTopRightRadius: 30, backgroundColor: "#FFF9F5", padding: 22, paddingBottom: 34 },
   handle: { alignSelf: "center", width: 42, height: 5, borderRadius: 3, backgroundColor: "#EACED3", marginBottom: 18 },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24 },
   heading: { color: "#4C2D38", fontSize: 23, lineHeight: 30, fontWeight: "700" },

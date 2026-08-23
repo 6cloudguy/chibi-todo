@@ -7,8 +7,10 @@ type ChibiWidgetNativeModule = {
   getWidgetSnapshot(): Promise<string | null>;
   refreshWidgets(): Promise<void>;
   isDesktopPetPermissionGranted(): Promise<boolean>;
+  isLauncherUsageAccessGranted(): Promise<boolean>;
   isDesktopPetEnabled(): Promise<boolean>;
   openDesktopPetPermissionSettings(): Promise<void>;
+  openLauncherUsageAccessSettings(): Promise<void>;
   startDesktopPet(): Promise<void>;
   stopDesktopPet(): Promise<void>;
 };
@@ -36,12 +38,20 @@ export async function desktopPetPermissionGranted() {
   return Platform.OS === "android" && nativeWidget ? nativeWidget.isDesktopPetPermissionGranted() : false;
 }
 
+export async function launcherUsageAccessGranted() {
+  return Platform.OS === "android" && nativeWidget ? nativeWidget.isLauncherUsageAccessGranted() : false;
+}
+
 export async function desktopPetEnabled() {
   return Platform.OS === "android" && nativeWidget ? nativeWidget.isDesktopPetEnabled() : false;
 }
 
 export async function openDesktopPetPermissionSettings() {
   if (Platform.OS === "android" && nativeWidget) await nativeWidget.openDesktopPetPermissionSettings();
+}
+
+export async function openLauncherUsageAccessSettings() {
+  if (Platform.OS === "android" && nativeWidget) await nativeWidget.openLauncherUsageAccessSettings();
 }
 
 export async function startDesktopPet() {

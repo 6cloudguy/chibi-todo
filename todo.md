@@ -37,3 +37,6 @@
 - [x] Remove unused name fields from Settings
 - [x] Make favorite color mood selections visibly update the app UI
 - [x] Make the add-task sheet move above the software keyboard
+- [x] Fix the add-task message field so the sheet reliably rises above the keyboard
+- [x] Restrict the desktop pet overlay to the home-screen launcher only
+- [x] Add gravity-bounded auto-walking and picked-up drag state to the launcher pet

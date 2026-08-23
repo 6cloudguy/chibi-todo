@@ -54,11 +54,13 @@ After installing the APK, go to the Android home screen. Long-press an empty are
 
 > **Important:** The direct-placement and HyperOS receiver fixes are native Android code. `pnpm android` now runs a clean Expo prebuild before compiling, so the config-plugin changes are included in the new APK. Do not use `pnpm android:fast` for this fix; it reuses the current native folder. If HyperOS still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
 
-## Turn On the Free-Roaming Desktop Pet
+## Turn On the Home-Screen Walking Pet
 
-The draggable companion is intentionally separate from the launcher widget. Open **Settings** in Momo's Day, find **Desktop Pet · Android**, and turn on **Let Momo roam**. HyperOS will open its special permission page; allow **Display over other apps**, return to Momo's Day, and turn the setting on once more. Momo appears at the bottom centre after an unlock, can be dragged anywhere, and changes mood/message when tapped.
+The walking companion is intentionally separate from the launcher widget. Open **Settings** in Momo's Day, find **Desktop Pet · Android**, and turn on **Let Momo walk at home**. HyperOS will first request **Display over other apps**, then **Usage Access**. Grant both, return to Momo's Day, and turn the setting on once more.
 
-> The desktop pet uses an Android overlay service, so a small persistent notification is expected. HyperOS can stop overlays in aggressive battery modes. If Momo disappears, allow background pop-ups where offered, remove battery restrictions for Momo's Day, and re-enable **Let Momo roam**. Standard widgets cannot freely walk between launcher grid cells or run continuous animations; the overlay is the supported option for that behavior. [3] [4]
+Momo appears only while the home launcher is in front; opening any other app hides her. On the launcher, Momo walks along the bottom edge under simple gravity, turns around at screen walls, and speaks through a bubble. Touching and dragging Momo shows a lifted/picked-up pose; release returns her to the floor. Individual app icons and folders are not available as collision objects through Android's public APIs.
+
+> The home-screen pet uses an Android overlay service, so a small persistent notification is expected. HyperOS can stop overlays in aggressive battery modes. If Momo disappears, allow background pop-ups where offered, keep **Usage Access** enabled, remove battery restrictions for Momo's Day, and re-enable **Let Momo walk at home**. Standard widgets cannot freely walk between launcher grid cells or run continuous animations; the optional overlay is the supported solution for that behavior. [3] [4] [5]
 
 ## Replace Chibi Assets
 
@@ -78,6 +80,8 @@ The main application uses `AsyncStorage` for detailed local tasks and settings. 
 
 `pnpm check` validates the TypeScript project. `pnpm test` runs deterministic tests for mood cycling, message selection, and widget snapshot construction. Android prebuild has been run successfully and generated the compact widget, overlay service, permissions, native bridge, and launcher-facing metadata.
 
+The add-task sheet follows direct keyboard-height events and uses Android's `pan` soft-input mode, keeping the task message field and save action visible above the keyboard. [6]
+
 This environment does not include an Android SDK, so a local Gradle APK compilation could not be completed here. Build the project on a machine with Android Studio/Android SDK installed or use the EAS cloud build path above. The widget does not support marking a task complete directly from the launcher in this MVP; tasks are mutated in the app, and the widget reflects the resulting state after sync.
 
 ## References
@@ -86,3 +90,5 @@ This environment does not include an Android SDK, so a local Gradle APK compilat
 [2]: https://docs.expo.dev/guides/adopting-prebuild/ "Expo — Adopt Prebuild"
 [3]: https://developer.android.com/develop/ui/views/appwidgets/overview "Android Developers — App widgets overview"
 [4]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"
+[5]: https://developer.android.com/reference/android/app/usage/UsageStatsManager "Android Developers — UsageStatsManager"
+[6]: https://docs.expo.dev/guides/keyboard-handling/ "Expo — Keyboard handling"

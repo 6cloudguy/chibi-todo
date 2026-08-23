@@ -7,7 +7,7 @@ import { haptic } from "@/lib/haptics";
 import type { AppSettings } from "@/lib/models";
 import { getColorMood } from "@/lib/color-mood";
 import { useTasks } from "@/lib/task-context";
-import { desktopPetEnabled, desktopPetPermissionGranted, openDesktopPetPermissionSettings, startDesktopPet, stopDesktopPet } from "@/lib/widget-bridge";
+import { desktopPetEnabled, desktopPetPermissionGranted, launcherUsageAccessGranted, openDesktopPetPermissionSettings, openLauncherUsageAccessSettings, startDesktopPet, stopDesktopPet } from "@/lib/widget-bridge";
 
 const themes: { value: AppSettings["favoriteColor"]; label: string; color: string }[] = [
   { value: "strawberry", label: "Strawberry", color: "#F4A6AF" },
@@ -35,6 +35,10 @@ export default function SettingsScreen() {
     }
     if (!(await desktopPetPermissionGranted())) {
       await openDesktopPetPermissionSettings();
+      return;
+    }
+    if (!(await launcherUsageAccessGranted())) {
+      await openLauncherUsageAccessSettings();
       return;
     }
     await startDesktopPet();
@@ -74,10 +78,10 @@ export default function SettingsScreen() {
         <SectionTitle label="DESKTOP PET · ANDROID" />
         <View style={styles.card}>
           <View style={styles.settingRow}>
-            <View style={styles.settingCopy}><Text style={styles.settingTitle}>Let Momo roam</Text><Text style={styles.settingBody}>A draggable companion with speech bubbles. HyperOS asks for display-over-other-apps permission the first time.</Text></View>
+            <View style={styles.settingCopy}><Text style={styles.settingTitle}>Let Momo walk at home</Text><Text style={styles.settingBody}>A launcher-only pet with gravity, walls, walking, and speech bubbles. HyperOS asks for Display over other apps and Usage Access.</Text></View>
             <Switch value={desktopPetOn} onValueChange={(value) => { void toggleDesktopPet(value); }} trackColor={{ false: "#E7D6DA", true: palette.accent }} thumbColor="#FFFFFF" accessibilityLabel="Turn on draggable desktop pet" />
           </View>
-          <Text style={styles.overlayHint}>When the phone is unlocked, Momo returns to bottom centre. Drag Momo anywhere, or tap her for a tiny reaction.</Text>
+          <Text style={styles.overlayHint}>Momo appears only over the home screen, walks along its bottom edge, and hides when another app opens. Drag her to pick her up; she returns to the floor when released.</Text>
         </View>
         <SectionTitle label="PERSONALITY" />
         <View style={styles.personalityRow}>
