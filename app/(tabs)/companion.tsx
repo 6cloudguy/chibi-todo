@@ -66,7 +66,7 @@ export default function CompanionScreen() {
           <View style={styles.widgetIcon}><MaterialIcons name="widgets" size={20} color="#D78390" /></View>
           <View style={styles.widgetCopy}>
             <Text style={styles.widgetTitle}>Made for the home screen</Text>
-            <Text style={styles.widgetBody}>Your selected mood and message are shared with the Android chibi widget.</Text>
+            <Text style={styles.widgetBody}>Place Momo directly from Widgets, long-press to move her, then tap “pet Momo” for tiny play moments.</Text>
           </View>
         </View>
       </ScrollView>

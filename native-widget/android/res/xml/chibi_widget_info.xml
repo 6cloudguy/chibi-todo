@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure=".WidgetConfigActivity"
     android:initialLayout="@layout/chibi_widget_compact"
     android:minHeight="180dp"
     android:minResizeHeight="160dp"

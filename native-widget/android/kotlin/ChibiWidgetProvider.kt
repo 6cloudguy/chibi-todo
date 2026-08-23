@@ -21,10 +21,17 @@ class ChibiWidgetProvider : AppWidgetProvider() {
   }
 
   override fun onReceive(context: Context, intent: Intent) {
-    if (intent.action == ACTION_CYCLE_MOOD) {
-      cycleMood(context)
-      refreshAll(context)
-      return
+    when (intent.action) {
+      ACTION_PET_COMPANION -> {
+        playWithCompanion(context)
+        refreshAll(context)
+        return
+      }
+      ACTION_CYCLE_MOOD -> {
+        cycleMood(context)
+        refreshAll(context)
+        return
+      }
     }
     super.onReceive(context, intent)
   }
@@ -40,6 +47,7 @@ class ChibiWidgetProvider : AppWidgetProvider() {
     val task = data.optString("nextTask", "")
     val total = data.optInt("totalCount", 0)
     val completed = data.optInt("completedCount", 0)
+    val petEnergy = data.optInt("petEnergy", 0)
     val showTasks = data.optBoolean("showTasks", true) && context.getSharedPreferences(PREFERENCES, 0).getBoolean("widget_show_tasks_$appWidgetId", true)
     val artResource = context.resources.getIdentifier("chibi_$mood", "drawable", context.packageName).takeIf { it != 0 } ?: R.drawable.chibi_idle
 
@@ -48,12 +56,17 @@ class ChibiWidgetProvider : AppWidgetProvider() {
     views.setTextViewText(R.id.widget_message, message)
     views.setTextViewText(R.id.widget_task, if (task.isBlank()) "one task at a time" else "○ $task")
     views.setTextViewText(R.id.widget_progress, if (total == 0) "a fresh little day" else "$completed / $total done")
+    views.setTextViewText(R.id.widget_pet_action, if (petEnergy == 0) "✦ pet Momo" else "✦ play again")
     views.setViewVisibility(R.id.widget_task, if (showTasks) View.VISIBLE else View.GONE)
     views.setViewVisibility(R.id.widget_progress, if (showTasks) View.VISIBLE else View.GONE)
 
     val cycleIntent = Intent(context, ChibiWidgetProvider::class.java).setAction(ACTION_CYCLE_MOOD)
     val cyclePendingIntent = PendingIntent.getBroadcast(context, appWidgetId, cycleIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     views.setOnClickPendingIntent(R.id.widget_chibi_image, cyclePendingIntent)
+
+    val petIntent = Intent(context, ChibiWidgetProvider::class.java).setAction(ACTION_PET_COMPANION)
+    val petPendingIntent = PendingIntent.getBroadcast(context, appWidgetId + 2000, petIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    views.setOnClickPendingIntent(R.id.widget_pet_action, petPendingIntent)
 
     val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -86,6 +99,23 @@ class ChibiWidgetProvider : AppWidgetProvider() {
     context.getSharedPreferences(PREFERENCES, 0).edit().putString(SNAPSHOT_KEY, data.toString()).apply()
   }
 
+  private fun playWithCompanion(context: Context) {
+    val data = snapshot(context)
+    val playCount = data.optInt("petEnergy", 0) + 1
+    val scenes = listOf(
+      "happy" to "Momo wiggles with joy ♡",
+      "excited" to "Momo zooms in tiny circles!",
+      "love" to "Momo brings you a little heart.",
+      "sleepy" to "Momo curls up for a cozy rest.",
+    )
+    val scene = scenes[(playCount - 1) % scenes.size]
+    data.put("petEnergy", playCount)
+    data.put("mood", scene.first)
+    data.put("message", scene.second)
+    data.put("updatedAt", System.currentTimeMillis().toString())
+    context.getSharedPreferences(PREFERENCES, 0).edit().putString(SNAPSHOT_KEY, data.toString()).apply()
+  }
+
   private fun snapshot(context: Context): JSONObject = try {
     JSONObject(context.getSharedPreferences(PREFERENCES, 0).getString(SNAPSHOT_KEY, "{}") ?: "{}")
   } catch (_: Exception) {
@@ -96,6 +126,7 @@ class ChibiWidgetProvider : AppWidgetProvider() {
     const val PREFERENCES = "chibi_widget_preferences"
     const val SNAPSHOT_KEY = "snapshot"
     private const val ACTION_CYCLE_MOOD = "chibi.todo.widget.CYCLE_MOOD"
+    private const val ACTION_PET_COMPANION = "chibi.todo.widget.PET_COMPANION"
     private const val EXPANDED_WIDTH_DP = 250
 
     fun refreshAll(context: Context) {

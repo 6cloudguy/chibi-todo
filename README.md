@@ -11,7 +11,7 @@ Momo's Day is a local-first **Expo + React Native + TypeScript** to-do app with 
 | To-do app | Create, complete, delete, and persist tasks locally. The Today screen separates active and completed tasks and shows real progress. |
 | Companion | Seven mood states, non-repeating supportive messages, companion mood selection, and replaceable PNG artwork. |
 | Personalization | Local-only companion and nickname fields, color mood choice, personality choice, custom messages, and a next-task widget preference. |
-| Android widget | Standard launcher-picker discovery, placement configuration, compact and expanded layouts, chibi-tap mood changes, app-open message action, resize support, preview, and app-widget updates. |
+| Android widget | Standard launcher-picker discovery, direct placement, compact and expanded layouts, chibi-tap mood changes, a dedicated pet-play action, app-open message action, resize support, preview, and app-widget updates. |
 | Native integration | Config plugin plus native Kotlin bridge keep Android widget code isolated from the React Native UI while preserving Expo prebuild workflow. |
 
 ## Run the JavaScript App
@@ -49,7 +49,9 @@ For an EAS build, open the completed build's download link or scan its installat
 
 ## Add the Chibi Widget
 
-After installing the APK, go to the Android home screen. Long-press an empty area, open **Widgets**, find **Momo's Day**, and place **Momo Companion**. Android will present the small configuration screen; choose whether the next task should be shown and tap **Add companion**. Tapping Momo changes expression and message; tapping the message opens the to-do app.
+After installing the APK, go to the Android home screen. Long-press an empty area, open **Widgets**, find **Momo's Day**, and place **Momo Companion**. The widget now places directly from the picker. Tap Momo to change expression and message, tap **pet Momo** for small companion reactions, and tap the message to open the to-do app. Long-press the placed widget to use Android's standard launcher drag mode and move it around your home screen.
+
+> **Important:** The direct-placement fix is native Android code. Build and install a fresh APK after this change; the earlier APK will retain its old widget metadata. If your launcher still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
 
 Android launcher widgets are intended to present concise, glanceable content and can be resized by the user when the provider supports it. Momo's Day declares horizontal and vertical resizing and selects an expanded layout as more horizontal room becomes available. [3]
 
@@ -70,7 +72,7 @@ The main application uses `AsyncStorage` for detailed local tasks and settings. 
 
 ## Validation and Known Limits
 
-`pnpm check` validates the TypeScript project. `pnpm test` runs deterministic tests for mood cycling, message selection, and widget snapshot construction. Android prebuild has been run successfully and generated the widget declarations, layouts, provider, Kotlin bridge, and configuration activity.
+`pnpm check` validates the TypeScript project. `pnpm test` runs deterministic tests for mood cycling, message selection, and widget snapshot construction. Android prebuild has been run successfully and generated the widget declarations, layouts, provider, Kotlin bridge, and direct-placement widget metadata.
 
 This environment does not include an Android SDK, so a local Gradle APK compilation could not be completed here. Build the project on a machine with Android Studio/Android SDK installed or use the EAS cloud build path above. The widget does not support marking a task complete directly from the launcher in this MVP; tasks are mutated in the app, and the widget reflects the resulting state after sync.
 

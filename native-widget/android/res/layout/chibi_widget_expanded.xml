@@ -35,6 +35,17 @@
             android:textColor="#7A5761"
             android:textSize="14sp" />
         <TextView
+            android:id="@+id/widget_pet_action"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/chibi_pet_button"
+            android:gravity="center"
+            android:paddingHorizontal="11dp"
+            android:textColor="#A84E60"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+        <TextView
             android:id="@+id/widget_task"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -18,3 +18,9 @@
 - [x] Validate TypeScript, automated tests, linting, and generated Android widget declarations
 - [ ] Build and install the development APK on Android hardware or an Android emulator, then confirm launcher placement and taps
 - [x] Replace oversized generated chibi and launcher artwork with compact local placeholder assets to enable checkpointing
+- [x] Fix Android launcher widget entry reporting that the app is not installed
+- [x] Make the Android widget feel like a pet companion with launcher-safe interaction behavior
+- [x] Fix Android launcher widget entry reporting that the app is not installed
+- [x] Make the Android widget feel like a pet companion with launcher-safe interaction behavior
+- [x] Update widget documentation to clarify launcher drag behavior and the new pet action
+- [x] Validate direct widget placement metadata, pet action resources, TypeScript, tests, and linting

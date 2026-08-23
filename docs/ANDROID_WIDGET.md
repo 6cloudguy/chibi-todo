@@ -6,9 +6,8 @@ The Android widget is a **native launcher widget**, not an in-app imitation. And
 
 | Project location | Responsibility |
 |---|---|
-| `plugins/with-chibi-widget.js` | Adds the widget receiver and configuration activity to the generated Android manifest, copies resources, and registers the React Native bridge package during prebuild. |
-| `native-widget/android/kotlin/ChibiWidgetProvider.kt` | Native `AppWidgetProvider` that selects a compact or expanded RemoteViews layout, renders the saved snapshot, opens the app from its message, and cycles mood when the chibi is tapped. |
-| `native-widget/android/kotlin/WidgetConfigActivity.kt` | Native Android configuration activity shown after placing a widget. It stores the per-widget next-task preference. |
+| `plugins/with-chibi-widget.js` | Adds the widget receiver to the generated Android manifest, copies resources, and registers the React Native bridge package during prebuild. |
+| `native-widget/android/kotlin/ChibiWidgetProvider.kt` | Native `AppWidgetProvider` that selects a compact or expanded RemoteViews layout, renders the saved snapshot, opens the app from its message, and handles mood and pet-play taps. |
 | `native-widget/android/kotlin/ChibiWidgetModule.kt` | React Native bridge that stores the normalized snapshot in shared preferences and asks Android to refresh widget instances. |
 | `native-widget/android/res/` | Compact and expanded layouts, provider metadata, rounded background, and picker preview. |
 | `assets/chibi/` | Replaceable mood artwork used by both the Expo UI and the generated Android resources. |
@@ -17,18 +16,20 @@ The Android widget is a **native launcher widget**, not an in-app imitation. And
 
 The app owns the detailed task list, settings, mood, and messages in local `AsyncStorage`. After every state change, `TaskProvider` creates a small snapshot containing the current mood, message, next incomplete task, completion counts, the task-display preference, and companion name. The native bridge serializes this snapshot into Android `SharedPreferences`, then refreshes every placed widget.
 
-The Android provider reads that same snapshot whenever it receives an update or resize event. Tapping the chibi cycles mood and updates the native snapshot immediately; when the app opens, it reconciles that most recent native mood and message before sending its next snapshot. Tapping the message launches the app. This uses the provider, metadata XML, and RemoteViews layout pattern described by Android's widget documentation. [1]
+The Android provider reads that same snapshot whenever it receives an update or resize event. Tapping the chibi cycles mood; tapping the **pet Momo** control advances a small play scene, including a new pose, energy count, and message. Both taps update the native snapshot immediately; when the app opens, it reconciles that most recent native mood and message before sending its next snapshot. Tapping the message launches the app. This uses the provider, metadata XML, and RemoteViews layout pattern described by Android's widget documentation. [1]
 
 ## Supported Widget Behavior
 
 | Interaction | Result |
 |---|---|
 | Long-press home screen → **Widgets** → **Momo's Day** | Shows the native **Momo Companion** entry from the standard launcher picker. |
-| Place the widget | Opens a small native configuration step for the next-task display preference. |
+| Place the widget | Adds directly to the home screen; the global next-task preference remains in the app's Settings screen. |
 | Tap the chibi | Cycles `idle → happy → love → sleepy → excited → shy → sad → idle` and refreshes the message. |
+| Tap **pet Momo** | Lets the companion react in a short loop: wiggle, zoom, bring a heart, then cozy rest. |
 | Tap the message | Opens the main to-do app. |
 | Add, complete, delete, or rename a task | The application writes a fresh snapshot and refreshes existing widgets. |
 | Resize the widget | The provider switches between compact and expanded XML layouts based on the launcher-reported width. |
+| Long-press the widget | Uses the Android launcher’s own drag mode to move Momo around the home screen. Freeform drag gestures inside the widget are not available to standard RemoteViews widgets. [2] |
 
 ## Replacing Chibi Artwork
 

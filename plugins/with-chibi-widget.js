@@ -4,7 +4,6 @@ const path = require("path");
 
 const PLUGIN_NAME = "with-chibi-widget";
 const RECEIVER = ".ChibiWidgetProvider";
-const CONFIG_ACTIVITY = ".WidgetConfigActivity";
 
 function ensureComponent(components, component, name) {
   const exists = components.some((entry) => entry.$?.["android:name"] === name);
@@ -36,18 +35,6 @@ function withWidgetManifest(config) {
         },
       }],
     }, RECEIVER);
-
-    application.activity = application.activity ?? [];
-    ensureComponent(application.activity, {
-      $: {
-        "android:name": CONFIG_ACTIVITY,
-        "android:exported": "false",
-        "android:label": "Momo Companion",
-      },
-      "intent-filter": [{
-        action: [{ $: { "android:name": "android.appwidget.action.APPWIDGET_CONFIGURE" } }],
-      }],
-    }, CONFIG_ACTIVITY);
 
     return manifestConfig;
   });
@@ -96,7 +83,7 @@ function withChibiWidget(config) {
     const appMain = path.join(androidRoot, "app", "src", "main");
     const kotlinDirectory = path.join(appMain, "java", ...androidPackage.split("."));
 
-    ["ChibiWidgetModule.kt", "ChibiWidgetPackage.kt", "ChibiWidgetProvider.kt", "WidgetConfigActivity.kt"].forEach((file) => {
+    ["ChibiWidgetModule.kt", "ChibiWidgetPackage.kt", "ChibiWidgetProvider.kt"].forEach((file) => {
       writeTemplate(path.join(nativeSource, "kotlin", file), path.join(kotlinDirectory, file), androidPackage);
     });
     copyDirectory(path.join(nativeSource, "res"), path.join(appMain, "res"));
@@ -115,4 +102,4 @@ function withChibiWidget(config) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.0.0");
+module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.1.0");

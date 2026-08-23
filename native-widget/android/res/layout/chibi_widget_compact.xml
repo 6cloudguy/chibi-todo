@@ -8,8 +8,8 @@
     android:padding="12dp">
     <ImageView
         android:id="@+id/widget_chibi_image"
-        android:layout_width="104dp"
-        android:layout_height="104dp"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         android:contentDescription="Chibi companion" />
     <TextView
         android:id="@+id/widget_name"
@@ -28,6 +28,17 @@
         android:maxLines="1"
         android:textColor="#7A5761"
         android:textSize="13sp" />
+    <TextView
+        android:id="@+id/widget_pet_action"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/chibi_pet_button"
+        android:gravity="center"
+        android:paddingHorizontal="10dp"
+        android:textColor="#A84E60"
+        android:textSize="12sp"
+        android:textStyle="bold" />
     <TextView
         android:id="@+id/widget_task"
         android:layout_width="wrap_content"
