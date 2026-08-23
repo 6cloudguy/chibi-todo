@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
-    "android": "expo run:android",
+    "android": "expo prebuild --clean --platform android --no-install && expo run:android",
+    "android:fast": "expo run:android",
     "ios": "expo run:ios",
     "qr": "node scripts/generate_qr.mjs"
   },

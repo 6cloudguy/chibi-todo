@@ -24,3 +24,7 @@
 - [x] Make the Android widget feel like a pet companion with launcher-safe interaction behavior
 - [x] Update widget documentation to clarify launcher drag behavior and the new pet action
 - [x] Validate direct widget placement metadata, pet action resources, TypeScript, tests, and linting
+- [x] Diagnose persistent launcher “app not installed” behavior against the generated Android package and manifest
+- [x] Apply a compatibility fix and provide a fresh-install verification workflow
+- [x] Fix launcher binding of the visible widget provider by correcting exported receiver metadata
+- [x] Make the launcher widget provider explicitly exported for HyperOS compatibility and rebuild locally

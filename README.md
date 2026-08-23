@@ -31,7 +31,7 @@ Expo Go cannot include this project's custom Kotlin widget provider. A developme
 
 | Approach | Commands | When to use it |
 |---|---|---|
-| Local Android build | `pnpm exec expo prebuild --clean --platform android` then `pnpm exec expo run:android --device` | You have Android Studio, the Android SDK, and an Android device or emulator. |
+| Local Android build | `pnpm android` | Regenerates the native Android project and installs a fresh build, ensuring native widget changes are included. |
 | EAS cloud development build | `npx eas-cli@latest login` then `npx eas-cli@latest build --platform android --profile development` | You want Expo's build service to produce an installable development APK. |
 | Internal APK | `npx eas-cli@latest build --platform android --profile preview` | You want an installable APK without the development-client workflow. |
 
@@ -42,7 +42,7 @@ The `expo-dev-client` dependency and `eas.json` development and preview profiles
 For a local build, connect the Android phone with USB debugging enabled and use:
 
 ```sh
-pnpm exec expo run:android --device
+pnpm android
 ```
 
 For an EAS build, open the completed build's download link or scan its installation QR code on the Android device. If Android asks, allow installation from the browser or file manager used to open the APK. The resulting install is the native application needed for the widget; do not test widget placement in Expo Go. [1]
@@ -51,7 +51,7 @@ For an EAS build, open the completed build's download link or scan its installat
 
 After installing the APK, go to the Android home screen. Long-press an empty area, open **Widgets**, find **Momo's Day**, and place **Momo Companion**. The widget now places directly from the picker. Tap Momo to change expression and message, tap **pet Momo** for small companion reactions, and tap the message to open the to-do app. Long-press the placed widget to use Android's standard launcher drag mode and move it around your home screen.
 
-> **Important:** The direct-placement fix is native Android code. Build and install a fresh APK after this change; the earlier APK will retain its old widget metadata. If your launcher still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
+> **Important:** The direct-placement and HyperOS receiver fixes are native Android code. `pnpm android` now runs a clean Expo prebuild before compiling, so the config-plugin changes are included in the new APK. Do not use `pnpm android:fast` for this fix; it reuses the current native folder. If HyperOS still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
 
 Android launcher widgets are intended to present concise, glanceable content and can be resized by the user when the provider supports it. Momo's Day declares horizontal and vertical resizing and selects an expanded layout as more horizontal room becomes available. [3]
 
@@ -60,8 +60,7 @@ Android launcher widgets are intended to present concise, glanceable content and
 The mood artwork is stored in `assets/chibi/`. Replace `idle.png`, `happy.png`, `love.png`, `sleepy.png`, `excited.png`, `shy.png`, and `sad.png` with square transparent PNGs that retain these names. Then regenerate native resources and build a new APK:
 
 ```sh
-pnpm exec expo prebuild --clean --platform android
-pnpm exec expo run:android --device
+pnpm android
 ```
 
 The current launcher artwork is copied to `assets/images/icon.png`, `splash-icon.png`, `favicon.png`, and `android-icon-foreground.png`. Its display configuration is in `app.config.ts`.

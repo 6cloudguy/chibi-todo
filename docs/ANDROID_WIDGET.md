@@ -1,6 +1,6 @@
 # Android Widget Implementation
 
-The Android widget is a **native launcher widget**, not an in-app imitation. Android exposes it through the normal widget picker because the project generates an `AppWidgetProvider` receiver, widget provider metadata, and RemoteViews layouts during Expo prebuild. Android widgets are launcher-hosted views rather than regular React Native screens, which is why this feature requires a development build or a release build rather than Expo Go. [1] [2]
+The Android widget is a **native launcher widget**, not an in-app imitation. Android exposes it through the normal widget picker because the project generates an explicitly launcher-bindable `AppWidgetProvider` receiver, widget provider metadata, and RemoteViews layouts during Expo prebuild. Android widgets are launcher-hosted views rather than regular React Native screens, which is why this feature requires a development build or a release build rather than Expo Go. [1] [2]
 
 ## Native Structure
 

@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 
 const PLUGIN_NAME = "with-chibi-widget";
-const RECEIVER = ".ChibiWidgetProvider";
 
 function ensureComponent(components, component, name) {
   const exists = components.some((entry) => entry.$?.["android:name"] === name);
@@ -14,13 +13,16 @@ function withWidgetManifest(config) {
   return withAndroidManifest(config, (manifestConfig) => {
     const application = manifestConfig.modResults.manifest.application?.[0];
     if (!application) throw new Error("Android application manifest entry was not found.");
+    const androidPackage = config.android?.package;
+    if (!androidPackage) throw new Error("An Android package is required to register the chibi widget receiver.");
+    const receiverName = `${androidPackage}.ChibiWidgetProvider`;
 
     application.receiver = application.receiver ?? [];
     ensureComponent(application.receiver, {
       $: {
-        "android:name": RECEIVER,
+        "android:name": receiverName,
         "android:label": "Momo Companion",
-        "android:exported": "false",
+        "android:exported": "true",
       },
       "intent-filter": [{
         action: [
@@ -34,7 +36,7 @@ function withWidgetManifest(config) {
           "android:resource": "@xml/chibi_widget_info",
         },
       }],
-    }, RECEIVER);
+    }, receiverName);
 
     return manifestConfig;
   });
@@ -102,4 +104,4 @@ function withChibiWidget(config) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.1.0");
+module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.2.0");
