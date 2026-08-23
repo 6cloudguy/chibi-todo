@@ -54,7 +54,7 @@ function withWidgetManifest(config) {
     }, `${androidPackage}.MomoOverlayService`);
 
     const permissions = manifestConfig.modResults.manifest["uses-permission"] ?? [];
-    ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.FOREGROUND_SERVICE_SPECIAL_USE", "android.permission.PACKAGE_USAGE_STATS"].forEach((permission) => {
+    ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"].forEach((permission) => {
       if (!permissions.some((item) => item.$?.["android:name"] === permission)) permissions.push({ $: { "android:name": permission } });
     });
     manifestConfig.modResults.manifest["uses-permission"] = permissions;
@@ -114,7 +114,7 @@ function withChibiWidget(config) {
     const drawableDirectory = path.join(appMain, "res", "drawable-nodpi");
     fs.mkdirSync(drawableDirectory, { recursive: true });
     const fallbackAsset = path.join(projectRoot, "assets", "chibi", "idle.png");
-    ["idle", "happy", "love", "sleepy", "excited", "shy", "sad"].forEach((mood) => {
+    ["idle", "happy", "love", "sleepy", "excited", "shy", "sad", "walk", "climb", "fall", "pickedup", "rest"].forEach((mood) => {
       const source = path.join(projectRoot, "assets", "chibi", `${mood}.png`);
       fs.copyFileSync(fs.existsSync(source) ? source : fallbackAsset, path.join(drawableDirectory, `chibi_${mood}.png`));
     });
@@ -125,4 +125,4 @@ function withChibiWidget(config) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.3.0");
+module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.4.0");

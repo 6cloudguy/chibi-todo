@@ -40,3 +40,7 @@
 - [x] Fix the add-task message field so the sheet reliably rises above the keyboard
 - [x] Restrict the desktop pet overlay to the home-screen launcher only
 - [x] Add gravity-bounded auto-walking and picked-up drag state to the launcher pet
+- [x] Replace Usage Access gating with an opt-in cross-app overlay companion
+- [x] Remove transparent padding so Momo’s touch bounds closely follow the visible chibi
+- [x] Add distinct additive artwork for pickup, falling, walking, climbing, and app-edge interactions
+- [x] Add varied idle and movement behavior instead of continuous walking

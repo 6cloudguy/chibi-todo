@@ -16,6 +16,8 @@ Keeping an overlay visible only while the launcher is foreground requires observ
 
 Expo documents `Keyboard` events and `KeyboardAvoidingView` as the basic tools for keyboard-safe layouts. A custom sheet can react directly to keyboard show/change events and animate its bottom offset using the reported keyboard height, avoiding reliance on modal resize behavior that varies by Android device. [7]
 
+For the requested cross-app companion, the overlay will no longer use Usage Access or foreground-app detection. Android 12 treats application overlays as untrusted for touch pass-through, so the interaction window must be constrained closely to Momo's visible artwork, with a separate non-touchable speech bubble. This avoids a large invisible area blocking gestures in another app. Android does not expose underlying app or icon geometry to ordinary overlays; climbing is therefore rendered as screen-bounded motion visually over the current application rather than collision against private app content. [8]
+
 ## References
 
 [1]: https://developer.android.com/develop/ui/views/appwidgets "Android Developers — Create a simple widget"
@@ -25,3 +27,4 @@ Expo documents `Keyboard` events and `KeyboardAvoidingView` as the basic tools f
 [5]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"
 [6]: https://developer.android.com/reference/android/app/usage/UsageStatsManager "Android Developers — UsageStatsManager"
 [7]: https://docs.expo.dev/guides/keyboard-handling/ "Expo — Keyboard handling"
+[8]: https://developer.android.com/about/versions/12/behavior-changes-all "Android Developers — Android 12 untrusted overlay touch behavior"

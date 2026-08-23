@@ -21,7 +21,7 @@ def compact_png(path: Path, max_dimension: int) -> None:
 
 
 def main() -> None:
-    for mood in ("idle", "happy", "love", "sleepy", "excited", "shy", "sad"):
+    for mood in ("idle", "happy", "love", "sleepy", "excited", "shy", "sad", "walk", "climb", "fall", "pickedup", "rest"):
         compact_png(CHIBI_DIR / f"{mood}.png", 256)
     for icon in ICON_PATHS:
         compact_png(icon, 384)

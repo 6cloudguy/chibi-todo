@@ -54,13 +54,13 @@ After installing the APK, go to the Android home screen. Long-press an empty are
 
 > **Important:** The direct-placement and HyperOS receiver fixes are native Android code. `pnpm android` now runs a clean Expo prebuild before compiling, so the config-plugin changes are included in the new APK. Do not use `pnpm android:fast` for this fix; it reuses the current native folder. If HyperOS still lists an old entry, remove its existing widget, uninstall the older Momo's Day build, then install the newly built APK before adding the widget again.
 
-## Turn On the Home-Screen Walking Pet
+## Turn On the Cross-App Explorer Pet
 
-The walking companion is intentionally separate from the launcher widget. Open **Settings** in Momo's Day, find **Desktop Pet · Android**, and turn on **Let Momo walk at home**. HyperOS will first request **Display over other apps**, then **Usage Access**. Grant both, return to Momo's Day, and turn the setting on once more.
+The explorer companion is intentionally separate from the launcher widget. Open **Settings** in Momo's Day, find **Desktop Pet · Android**, and turn on **Let Momo explore**. HyperOS will request only **Display over other apps**. Grant it, return to Momo's Day, and turn the setting on once more.
 
-Momo appears only while the home launcher is in front; opening any other app hides her. On the launcher, Momo walks along the bottom edge under simple gravity, turns around at screen walls, and speaks through a bubble. Touching and dragging Momo shows a lifted/picked-up pose; release returns her to the floor. Individual app icons and folders are not available as collision objects through Android's public APIs.
+Momo uses a tight image-sized touch window instead of the previous oversized invisible rectangle. She can float visually above your apps, pauses to rest, takes short walks, climbs at screen edges, falls back to the floor, and uses dedicated motion poses for walking, climbing, falling, rest, and being picked up. Dragging shows the picked-up pose and release begins a gentle fall. Android does not expose the private geometry of app icons or other-app controls, so collisions are with the screen walls and floor rather than individual icons.
 
-> The home-screen pet uses an Android overlay service, so a small persistent notification is expected. HyperOS can stop overlays in aggressive battery modes. If Momo disappears, allow background pop-ups where offered, keep **Usage Access** enabled, remove battery restrictions for Momo's Day, and re-enable **Let Momo walk at home**. Standard widgets cannot freely walk between launcher grid cells or run continuous animations; the optional overlay is the supported solution for that behavior. [3] [4] [5]
+> The explorer pet uses an Android overlay service, so a small persistent notification is expected. HyperOS can stop overlays in aggressive battery modes. If Momo disappears, allow background pop-ups where offered, remove battery restrictions for Momo's Day, and re-enable **Let Momo explore**. Standard widgets cannot freely walk between launcher grid cells or run continuous animations; the optional overlay is the supported solution for that behavior. [3] [4]
 
 ## Replace Chibi Assets
 
@@ -90,5 +90,4 @@ This environment does not include an Android SDK, so a local Gradle APK compilat
 [2]: https://docs.expo.dev/guides/adopting-prebuild/ "Expo — Adopt Prebuild"
 [3]: https://developer.android.com/develop/ui/views/appwidgets/overview "Android Developers — App widgets overview"
 [4]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"
-[5]: https://developer.android.com/reference/android/app/usage/UsageStatsManager "Android Developers — UsageStatsManager"
-[6]: https://docs.expo.dev/guides/keyboard-handling/ "Expo — Keyboard handling"
+[5]: https://docs.expo.dev/guides/keyboard-handling/ "Expo — Keyboard handling"

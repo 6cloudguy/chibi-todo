@@ -17,7 +17,7 @@ The Android widget is a **native launcher widget**, not an in-app imitation. And
 
 The app owns the detailed task list, settings, mood, and messages in local `AsyncStorage`. After every state change, `TaskProvider` creates a small snapshot containing the current mood, message, next incomplete task, completion counts, the task-display preference, and companion name. The native bridge serializes this snapshot into Android `SharedPreferences`, then refreshes every placed widget.
 
-The Android provider reads that same snapshot whenever it receives an update. The launcher widget renders only a small chibi and speech bubble; tapping the chibi cycles mood and message. The optional desktop pet uses the same snapshot, but is a separate application overlay that checks the foreground package through Android Usage Access. It is deliberately shown only while the configured home launcher is foreground. [1] [6]
+The Android provider reads that same snapshot whenever it receives an update. The launcher widget renders only a small chibi and speech bubble; tapping the chibi cycles mood and message. The optional desktop pet uses the same snapshot but is a separate, user-granted application overlay. It no longer reads Usage Access or foreground-app history; when enabled, Momo can visually explore above the current application. [1]
 
 ## Supported Widget Behavior
 
@@ -30,13 +30,13 @@ The Android provider reads that same snapshot whenever it receives an update. Th
 | Add, complete, delete, or rename a task | The application writes a fresh snapshot and refreshes existing widgets. |
 | Long-press the widget | Uses the Android launcher’s grid-based drag mode. A standard widget cannot move freely between home-screen cells or animate continuously inside `RemoteViews`. [2] [4] |
 
-## Optional Launcher-Only Desktop Pet
+## Optional Cross-App Desktop Pet
 
-The **Let Momo walk at home** setting is an opt-in Android overlay, not a widget. It needs two system permissions: **Display over other apps** to draw Momo, and **Usage Access** so the service can determine whether HyperOS's launcher is in front. Turn the switch on, grant each permission when prompted, return to Momo's Day, and turn it on once more.
+The **Let Momo explore** setting is an opt-in Android overlay, not a widget. It needs only the system's **Display over other apps** permission. Turn the switch on, grant that permission when prompted, return to Momo's Day, and turn it on once more.
 
-Momo appears only on the home launcher, begins at the floor, and walks left and right under simple gravity. The pet is bounded by the screen edges; Android does not expose a safe public API for collision detection against individual launcher icons, folders, or wallpaper elements. When the user touches Momo, she changes into a lifted/picked-up state; while being dragged she follows the finger within screen bounds, and returns to the floor after release. Opening any other app hides the overlay within the foreground check interval.
+Momo has a tight image-sized touch window and a separate non-touchable speech bubble, so the previous large invisible interaction rectangle is removed. She rests between activity bursts, walks with a small step animation, climbs at screen edges, falls gently under simple gravity, and switches to a dedicated picked-up pose during a drag. The companion is bounded by screen walls and floor. It can appear visually above app content, but Android does not expose ordinary overlays to the private geometry of another app's icons, controls, or surfaces, so “climbing apps” is rendered as screen-bounded movement over the current app rather than collision with private UI elements. [6]
 
-> Android gives the system control of application overlays. HyperOS may stop the companion under battery management, when background pop-up permission is denied, when Usage Access is revoked, or after force stopping the app. Keep the small Momo notification enabled, allow display-over-other-apps and Usage Access, and exempt Momo's Day from battery restrictions if HyperOS offers those options. [5] [6]
+> Android gives the system control of application overlays. HyperOS may stop the companion under battery management, when background pop-up permission is denied, or after force stopping the app. Keep the small Momo notification enabled, allow display-over-other-apps, and exempt Momo's Day from battery restrictions if HyperOS offers those options. [5]
 
 ## Replacing Chibi Artwork
 
@@ -51,12 +51,17 @@ Use these exact file names, each as a square PNG with transparent background. Th
 | Excited | `assets/chibi/excited.png` |
 | Shy | `assets/chibi/shy.png` |
 | Sad | `assets/chibi/sad.png` |
+| Walk | `assets/chibi/walk.png` |
+| Climb | `assets/chibi/climb.png` |
+| Fall | `assets/chibi/fall.png` |
+| Picked up | `assets/chibi/pickedup.png` |
+| Rest | `assets/chibi/rest.png` |
 
 After replacing any PNG, rebuild native Android resources with `pnpm exec expo prebuild --clean --platform android` and then create a new development or release build. Native build code is regenerated from `app.config.ts` and the local config plugin, so direct edits under `android/` are intentionally not the source of truth. [3]
 
 ## Deliberate MVP Limits
 
-The widget deliberately avoids direct task completion from the launcher. Android launcher widgets have interaction and `RemoteViews` constraints, so the current interaction set prioritizes reliable state updates over a fragile one-tap task mutation. [1] The launcher-only overlay uses a foreground service, so Android requires a visible service notification, user-granted overlay permission, and Usage Access. It can detect the launcher package but cannot determine the geometry of individual home-screen icons; its collision system therefore uses screen walls and floor boundaries. The app does not use AI or a backend. [5] [6]
+The widget deliberately avoids direct task completion from the launcher. Android launcher widgets have interaction and `RemoteViews` constraints, so the current interaction set prioritizes reliable state updates over a fragile one-tap task mutation. [1] The cross-app overlay uses a foreground service, so Android requires a visible service notification and user-granted overlay permission. A non-touchable speech-bubble window is used to avoid obscuring interactions outside Momo's image-sized touch region. The app does not use AI or a backend. [5] [6]
 
 ## References
 
@@ -65,4 +70,4 @@ The widget deliberately avoids direct task completion from the launcher. Android
 [3]: https://docs.expo.dev/guides/adopting-prebuild/ "Expo — Adopt Prebuild"
 [4]: https://developer.android.com/develop/ui/views/appwidgets/layouts "Android Developers — Provide flexible widget layouts"
 [5]: https://developer.android.com/reference/android/view/WindowManager.LayoutParams#TYPE_APPLICATION_OVERLAY "Android Developers — TYPE_APPLICATION_OVERLAY"
-[6]: https://developer.android.com/reference/android/app/usage/UsageStatsManager "Android Developers — UsageStatsManager"
+[6]: https://developer.android.com/about/versions/12/behavior-changes-all "Android Developers — Android 12 overlay touch behavior"

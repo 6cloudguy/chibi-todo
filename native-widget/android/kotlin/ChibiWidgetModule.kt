@@ -47,11 +47,6 @@ class ChibiWidgetModule(reactContext: ReactApplicationContext) : ReactContextBas
   }
 
   @ReactMethod
-  fun isLauncherUsageAccessGranted(promise: Promise) {
-    promise.resolve(MomoOverlayService.hasUsageAccess(reactApplicationContext))
-  }
-
-  @ReactMethod
   fun isDesktopPetEnabled(promise: Promise) {
     promise.resolve(reactApplicationContext.getSharedPreferences(ChibiWidgetProvider.PREFERENCES, 0).getBoolean(MomoOverlayService.OVERLAY_ENABLED, false))
   }
@@ -68,16 +63,6 @@ class ChibiWidgetModule(reactContext: ReactApplicationContext) : ReactContextBas
   }
 
   @ReactMethod
-  fun openLauncherUsageAccessSettings(promise: Promise) {
-    try {
-      reactApplicationContext.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-      promise.resolve(null)
-    } catch (exception: Exception) {
-      promise.reject("USAGE_ACCESS_SETTINGS_FAILED", exception)
-    }
-  }
-
-  @ReactMethod
   fun startDesktopPet(promise: Promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       promise.reject("DESKTOP_PET_UNSUPPORTED", "The desktop pet requires Android 8 or newer.")
@@ -85,10 +70,6 @@ class ChibiWidgetModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
     if (!Settings.canDrawOverlays(reactApplicationContext)) {
       promise.reject("OVERLAY_PERMISSION_REQUIRED", "Display-over-other-apps permission is required for the desktop pet.")
-      return
-    }
-    if (!MomoOverlayService.hasUsageAccess(reactApplicationContext)) {
-      promise.reject("USAGE_ACCESS_REQUIRED", "Usage Access is required so Momo can stay only on the home screen.")
       return
     }
     try {
