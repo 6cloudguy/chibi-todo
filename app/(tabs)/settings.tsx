@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from
 import { ScreenContainer } from "@/components/screen-container";
 import { haptic } from "@/lib/haptics";
 import type { AppSettings } from "@/lib/models";
+import { getColorMood } from "@/lib/color-mood";
 import { useTasks } from "@/lib/task-context";
 import { desktopPetEnabled, desktopPetPermissionGranted, openDesktopPetPermissionSettings, startDesktopPet, stopDesktopPet } from "@/lib/widget-bridge";
 
@@ -40,7 +41,7 @@ export default function SettingsScreen() {
     setDesktopPetOn(true);
   };
 
-  const updateText = (key: "girlfriendName" | "chibiName", value: string) => updateSettings({ [key]: value });
+  const palette = getColorMood(settings.favoriteColor);
   const addMessage = () => {
     const cleaned = messageDraft.trim();
     if (!cleaned || settings.customMessages.includes(cleaned)) return;
@@ -50,22 +51,16 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScreenContainer containerClassName="bg-[#FFF9F5]" className="flex-1">
+    <ScreenContainer containerStyle={{ backgroundColor: palette.background }} className="flex-1">
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Text style={styles.eyebrow}>MAKE IT YOURS</Text>
         <Text style={styles.title}>settings</Text>
-        <SectionTitle label="NAMES" />
-        <View style={styles.card}>
-          <Field label="GIRLFRIEND'S NICKNAME" value={settings.girlfriendName} placeholder="A sweet name, if you want" onChangeText={(value) => updateText("girlfriendName", value)} />
-          <Divider />
-          <Field label="CHIBI NAME" value={settings.chibiName} placeholder="Momo" onChangeText={(value) => updateText("chibiName", value)} />
-        </View>
         <SectionTitle label="COLOR MOOD" />
         <View style={styles.themeRow}>
           {themes.map((theme) => (
-            <Pressable key={theme.value} accessibilityRole="button" accessibilityState={{ selected: settings.favoriteColor === theme.value }} onPress={() => { haptic.selection(); updateSettings({ favoriteColor: theme.value }); }} style={({ pressed }) => [styles.themeChoice, settings.favoriteColor === theme.value && styles.themeChoiceActive, pressed && styles.pressed]}>
+            <Pressable key={theme.value} accessibilityRole="button" accessibilityState={{ selected: settings.favoriteColor === theme.value }} onPress={() => { haptic.selection(); updateSettings({ favoriteColor: theme.value }); }} style={({ pressed }) => [styles.themeChoice, settings.favoriteColor === theme.value && { borderColor: palette.accent, backgroundColor: palette.surface }, pressed && styles.pressed]}>
               <View style={[styles.themeDot, { backgroundColor: theme.color }]} />
-              <Text style={[styles.themeLabel, settings.favoriteColor === theme.value && styles.themeLabelActive]}>{theme.label}</Text>
+              <Text style={[styles.themeLabel, settings.favoriteColor === theme.value && { color: palette.accentDeep }]}>{theme.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -73,14 +68,14 @@ export default function SettingsScreen() {
         <View style={styles.card}>
           <View style={styles.settingRow}>
             <View style={styles.settingCopy}><Text style={styles.settingTitle}>Show my next task</Text><Text style={styles.settingBody}>Keep a tiny reminder below the companion.</Text></View>
-            <Switch value={settings.showTasksOnWidget} onValueChange={(value) => { haptic.medium(); updateSettings({ showTasksOnWidget: value }); }} trackColor={{ false: "#E7D6DA", true: "#F2A8B3" }} thumbColor="#FFFFFF" accessibilityLabel="Show next task on widget" />
+            <Switch value={settings.showTasksOnWidget} onValueChange={(value) => { haptic.medium(); updateSettings({ showTasksOnWidget: value }); }} trackColor={{ false: "#E7D6DA", true: palette.accent }} thumbColor="#FFFFFF" accessibilityLabel="Show next task on widget" />
           </View>
         </View>
         <SectionTitle label="DESKTOP PET · ANDROID" />
         <View style={styles.card}>
           <View style={styles.settingRow}>
             <View style={styles.settingCopy}><Text style={styles.settingTitle}>Let Momo roam</Text><Text style={styles.settingBody}>A draggable companion with speech bubbles. HyperOS asks for display-over-other-apps permission the first time.</Text></View>
-            <Switch value={desktopPetOn} onValueChange={(value) => { void toggleDesktopPet(value); }} trackColor={{ false: "#E7D6DA", true: "#F2A8B3" }} thumbColor="#FFFFFF" accessibilityLabel="Turn on draggable desktop pet" />
+            <Switch value={desktopPetOn} onValueChange={(value) => { void toggleDesktopPet(value); }} trackColor={{ false: "#E7D6DA", true: palette.accent }} thumbColor="#FFFFFF" accessibilityLabel="Turn on draggable desktop pet" />
           </View>
           <Text style={styles.overlayHint}>When the phone is unlocked, Momo returns to bottom centre. Drag Momo anywhere, or tap her for a tiny reaction.</Text>
         </View>
@@ -104,11 +99,6 @@ export default function SettingsScreen() {
 }
 
 function SectionTitle({ label }: { label: string }) { return <Text style={styles.sectionTitle}>{label}</Text>; }
-function Divider() { return <View style={styles.divider} />; }
-function Field({ label, value, placeholder, onChangeText }: { label: string; value: string; placeholder: string; onChangeText: (value: string) => void }) {
-  return <View><Text style={styles.fieldLabel}>{label}</Text><TextInput value={value} placeholder={placeholder} placeholderTextColor="#BBA2A8" onChangeText={onChangeText} style={styles.fieldInput} accessibilityLabel={label} /></View>;
-}
-
 const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 112 },
   eyebrow: { color: "#AD7C88", fontWeight: "700", fontSize: 11, letterSpacing: 1.15, marginTop: 3 },
@@ -120,10 +110,8 @@ const styles = StyleSheet.create({
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: "#F0DFE2", marginVertical: 3 },
   themeRow: { flexDirection: "row", gap: 8 },
   themeChoice: { flex: 1, backgroundColor: "#FFFFFF", minHeight: 74, borderRadius: 17, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#F0DFE2", gap: 6 },
-  themeChoiceActive: { borderColor: "#F29AA8", backgroundColor: "#FFF4F5" },
   themeDot: { width: 21, height: 21, borderRadius: 11 },
   themeLabel: { color: "#916A75", fontSize: 11, fontWeight: "700" },
-  themeLabelActive: { color: "#C85F70" },
   settingRow: { flexDirection: "row", alignItems: "center", minHeight: 82 },
   settingCopy: { flex: 1, paddingRight: 10 },
   settingTitle: { color: "#4C2D38", fontSize: 15, lineHeight: 21, fontWeight: "700" },

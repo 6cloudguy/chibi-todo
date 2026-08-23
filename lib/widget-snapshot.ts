@@ -18,7 +18,7 @@ export function buildWidgetSnapshot(state: WidgetSyncInput): WidgetSnapshot {
     completedCount,
     totalCount: state.tasks.length,
     showTasks: state.settings.showTasksOnWidget,
-    companionName: state.settings.chibiName,
+    companionName: "Momo",
     updatedAt: new Date().toISOString(),
   };
 }

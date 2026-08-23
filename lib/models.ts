@@ -10,8 +10,6 @@ export type Task = {
 };
 
 export type AppSettings = {
-  girlfriendName: string;
-  chibiName: string;
   favoriteColor: "strawberry" | "lavender" | "peach";
   showTasksOnWidget: boolean;
   personality: "gentle" | "playful" | "supportive";
@@ -30,8 +28,6 @@ export type WidgetSnapshot = {
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  girlfriendName: "",
-  chibiName: "Momo",
   favoriteColor: "strawberry",
   showTasksOnWidget: true,
   personality: "gentle",

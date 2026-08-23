@@ -35,7 +35,7 @@ describe("chibi state", () => {
   it("serializes the next incomplete task and completion counts for the widget", () => {
     const snapshot = buildWidgetSnapshot({
       tasks: [activeTask, completedTask],
-      settings: { ...DEFAULT_SETTINGS, chibiName: "Momo", showTasksOnWidget: true },
+      settings: { ...DEFAULT_SETTINGS, showTasksOnWidget: true },
       mood: "love",
       message: "miss you ♡",
     });

@@ -9,8 +9,8 @@ Momo's Day is a local-first **Expo + React Native + TypeScript** to-do app with 
 | Area | Delivered behavior |
 |---|---|
 | To-do app | Create, complete, delete, and persist tasks locally. The Today screen separates active and completed tasks and shows real progress. |
-| Companion | Seven mood states, non-repeating supportive messages, companion mood selection, and replaceable PNG artwork. |
-| Personalization | Local-only companion and nickname fields, color mood choice, personality choice, custom messages, and a next-task widget preference. |
+| Chibi system | Seven mood states, non-repeating supportive messages, replaceable PNG artwork, and companion reactions through the widget or desktop pet. |
+| Personalization | Local-only color mood choice, personality choice, custom messages, a next-task widget preference, and desktop-pet controls. |
 | Android widget | Standard launcher-picker discovery, direct placement, compact chibi-and-speech-bubble presentation, chibi-tap mood changes, preview, and app-widget updates. |
 | Desktop pet | Optional user-granted Android overlay that docks at bottom centre on unlock, can be dragged freely over the launcher, and reacts with artwork swaps and speech bubbles. |
 | Native integration | Config plugin plus native Kotlin bridge keep Android widget code isolated from the React Native UI while preserving Expo prebuild workflow. |

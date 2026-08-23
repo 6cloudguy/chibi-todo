@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, SectionList, StyleSheet, Text, View } fro
 import { AddTaskSheet } from "@/components/add-task-sheet";
 import { TaskRow } from "@/components/task-row";
 import { ScreenContainer } from "@/components/screen-container";
+import { getColorMood } from "@/lib/color-mood";
 import { taskSummary, useTasks } from "@/lib/task-context";
 import type { Task } from "@/lib/models";
 
@@ -16,7 +17,8 @@ function todayLabel() {
 
 export default function HomeScreen() {
   const [addSheetOpen, setAddSheetOpen] = useState(false);
-  const { tasks, isReady, addTask, deleteTask, toggleTask } = useTasks();
+  const { tasks, isReady, addTask, deleteTask, toggleTask, settings } = useTasks();
+  const palette = getColorMood(settings.favoriteColor);
   const summary = taskSummary(tasks);
   const sections = useMemo<TaskSection[]>(() => {
     const active = tasks.filter((task) => !task.completed);
@@ -28,40 +30,40 @@ export default function HomeScreen() {
   }, [tasks]);
 
   if (!isReady) {
-    return <ScreenContainer containerClassName="bg-[#FFF9F5]" className="items-center justify-center"><ActivityIndicator color="#F29AA8" /></ScreenContainer>;
+    return <ScreenContainer containerStyle={{ backgroundColor: palette.background }} className="items-center justify-center"><ActivityIndicator color={palette.accent} /></ScreenContainer>;
   }
 
   return (
-    <ScreenContainer containerClassName="bg-[#FFF9F5]" className="flex-1">
+    <ScreenContainer containerStyle={{ backgroundColor: palette.background }} className="flex-1">
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <TaskRow task={item} onToggle={() => toggleTask(item.id)} onDelete={() => deleteTask(item.id)} />}
-        renderSectionHeader={({ section }) => <Text style={styles.sectionTitle}>{section.title}</Text>}
+        renderItem={({ item }) => <TaskRow task={item} palette={palette} onToggle={() => toggleTask(item.id)} onDelete={() => deleteTask(item.id)} />}
+        renderSectionHeader={({ section }) => <Text style={[styles.sectionTitle, { color: palette.muted }]}>{section.title}</Text>}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}
         contentContainerStyle={[styles.listContent, tasks.length === 0 && styles.emptyContent]}
         ListHeaderComponent={
           <View>
-            <Text style={styles.eyebrow}>{todayLabel()}</Text>
+            <Text style={[styles.eyebrow, { color: palette.muted }]}>{todayLabel()}</Text>
             <View style={styles.titleRow}>
-              <Text style={styles.title}>today <Text style={styles.heart}>♡</Text></Text>
-              <Text style={styles.count}>{summary.completed} / {summary.total} done</Text>
+              <Text style={[styles.title, { color: palette.ink }]}>today <Text style={[styles.heart, { color: palette.accent }]}>♡</Text></Text>
+              <Text style={[styles.count, { color: palette.muted }]}>{summary.completed} / {summary.total} done</Text>
             </View>
-            <View style={styles.progressTrack} accessibilityLabel={`${summary.completed} of ${summary.total} tasks completed`}>
-              <View style={[styles.progressFill, { width: `${summary.progress * 100}%` }]} />
+            <View style={[styles.progressTrack, { backgroundColor: palette.border }]} accessibilityLabel={`${summary.completed} of ${summary.total} tasks completed`}>
+              <View style={[styles.progressFill, { width: `${summary.progress * 100}%`, backgroundColor: palette.accent }]} />
             </View>
-            <View style={styles.companionNote}>
-              <View style={styles.sparkle}><Text style={styles.sparkleText}>✦</Text></View>
-              <Text style={styles.companionText}>{tasks.length === 0 ? "A soft little place for your day." : "A little at a time is still enough."}</Text>
+            <View style={[styles.companionNote, { backgroundColor: palette.surface }]}>
+              <View style={[styles.sparkle, { backgroundColor: palette.accent }]}><Text style={styles.sparkleText}>✦</Text></View>
+              <Text style={[styles.companionText, { color: palette.ink }]}>{tasks.length === 0 ? "A soft little place for your day." : "A little at a time is still enough."}</Text>
             </View>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <View style={styles.emptyDoodle}><Text style={styles.emptyDoodleText}>♡</Text></View>
-            <Text style={styles.emptyTitle}>Nothing to carry yet</Text>
-            <Text style={styles.emptyBody}>Add one tiny thing, then let the day meet you there.</Text>
+            <View style={[styles.emptyDoodle, { backgroundColor: palette.surface }]}><Text style={[styles.emptyDoodleText, { color: palette.accent }]}>♡</Text></View>
+            <Text style={[styles.emptyTitle, { color: palette.ink }]}>Nothing to carry yet</Text>
+            <Text style={[styles.emptyBody, { color: palette.muted }]}>Add one tiny thing, then let the day meet you there.</Text>
           </View>
         }
       />
@@ -69,7 +71,7 @@ export default function HomeScreen() {
         accessibilityRole="button"
         accessibilityLabel="Add a task"
         onPress={() => setAddSheetOpen(true)}
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+        style={({ pressed }) => [styles.fab, { backgroundColor: palette.accent }, pressed && styles.fabPressed]}
       >
         <MaterialIcons name="add" size={28} color="#FFFFFF" />
       </Pressable>

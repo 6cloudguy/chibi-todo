@@ -26,6 +26,17 @@ type TaskContextValue = PersistedState & {
 
 const TaskContext = createContext<TaskContextValue | undefined>(undefined);
 
+function normalizeSettings(restored?: Partial<AppSettings>): AppSettings {
+  const favoriteColor = restored?.favoriteColor;
+  const personality = restored?.personality;
+  return {
+    favoriteColor: favoriteColor === "lavender" || favoriteColor === "peach" || favoriteColor === "strawberry" ? favoriteColor : DEFAULT_SETTINGS.favoriteColor,
+    showTasksOnWidget: typeof restored?.showTasksOnWidget === "boolean" ? restored.showTasksOnWidget : DEFAULT_SETTINGS.showTasksOnWidget,
+    personality: personality === "playful" || personality === "supportive" || personality === "gentle" ? personality : DEFAULT_SETTINGS.personality,
+    customMessages: Array.isArray(restored?.customMessages) ? restored.customMessages.filter((message): message is string => typeof message === "string") : [],
+  };
+}
+
 export function TaskProvider({ children }: PropsWithChildren) {
   const [isReady, setIsReady] = useState(false);
   const [state, setState] = useState<PersistedState>({
@@ -43,7 +54,7 @@ export function TaskProvider({ children }: PropsWithChildren) {
         const restored = value ? (JSON.parse(value) as Partial<PersistedState>) : {};
         setState((current) => ({
           tasks: restored.tasks ?? current.tasks,
-          settings: { ...DEFAULT_SETTINGS, ...restored.settings },
+          settings: normalizeSettings(restored.settings),
           mood: (nativeSnapshot?.mood as ChibiMood | undefined) ?? restored.mood ?? current.mood,
           message: nativeSnapshot?.message ?? restored.message ?? current.message,
         }));

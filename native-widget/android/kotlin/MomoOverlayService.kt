@@ -94,8 +94,8 @@ class MomoOverlayService : Service() {
     if (overlay != null) return
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
     val density = resources.displayMetrics.density
-    val width = (196 * density).toInt()
-    val height = (190 * density).toInt()
+    val width = (252 * density).toInt()
+    val height = (260 * density).toInt()
     val root = FrameLayout(this).apply { setBackgroundColor(Color.TRANSPARENT) }
     val bubble = TextView(this).apply {
       background = bubbleBackground()
@@ -110,7 +110,7 @@ class MomoOverlayService : Service() {
       scaleType = ImageView.ScaleType.FIT_CENTER
     }
     root.addView(bubble, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.CENTER_HORIZONTAL))
-    root.addView(image, FrameLayout.LayoutParams((132 * density).toInt(), (132 * density).toInt(), Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL))
+    root.addView(image, FrameLayout.LayoutParams((190 * density).toInt(), (190 * density).toInt(), Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL))
     root.setOnTouchListener(::handleTouch)
 
     overlayParams = WindowManager.LayoutParams(

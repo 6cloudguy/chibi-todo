@@ -1,5 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { useEffect, useState } from "react";
 
 import { haptic } from "@/lib/haptics";
@@ -30,7 +30,9 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
 
   return (
     <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalRoot}>
       <Pressable style={styles.backdrop} onPress={onClose} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <View style={styles.topRow}>
@@ -67,13 +69,16 @@ export function AddTaskSheet({ visible, onClose, onSave }: AddTaskSheetProps) {
           <MaterialIcons name="arrow-forward" size={19} color="#FFFFFF" />
         </Pressable>
       </View>
+      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(57, 34, 42, 0.32)" },
-  sheet: { position: "absolute", bottom: 0, left: 0, right: 0, borderTopLeftRadius: 30, borderTopRightRadius: 30, backgroundColor: "#FFF9F5", padding: 22, paddingBottom: 34 },
+  modalRoot: { flex: 1, justifyContent: "flex-end" },
+  sheet: { borderTopLeftRadius: 30, borderTopRightRadius: 30, backgroundColor: "#FFF9F5", padding: 22, paddingBottom: 34 },
   handle: { alignSelf: "center", width: 42, height: 5, borderRadius: 3, backgroundColor: "#EACED3", marginBottom: 18 },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24 },
   heading: { color: "#4C2D38", fontSize: 23, lineHeight: 30, fontWeight: "700" },

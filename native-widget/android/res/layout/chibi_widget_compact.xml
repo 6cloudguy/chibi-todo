@@ -11,7 +11,7 @@
         android:background="@drawable/chibi_speech_bubble"
         android:ellipsize="end"
         android:gravity="center"
-        android:maxEms="15"
+        android:maxEms="17"
         android:maxLines="2"
         android:paddingHorizontal="11dp"
         android:paddingVertical="6dp"
@@ -19,8 +19,8 @@
         android:textSize="12sp" />
     <ImageView
         android:id="@+id/widget_chibi_image"
-        android:layout_width="102dp"
-        android:layout_height="102dp"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:layout_gravity="bottom|center_horizontal"
         android:contentDescription="Momo companion. Tap to play." />
 </FrameLayout>

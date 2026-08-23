@@ -32,3 +32,8 @@
 - [x] Add speech-bubble messages and animation-like companion interaction states
 - [x] Assess and document Android/HyperOS limits on free-roaming home-screen companions and launcher-open triggers
 - [x] Add a user-granted draggable overlay pet option with bottom-centre unlock docking
+- [x] Increase the chibi artwork size in the compact widget and desktop-pet overlay
+- [x] Remove the in-app Companion page and its tab navigation
+- [x] Remove unused name fields from Settings
+- [x] Make favorite color mood selections visibly update the app UI
+- [x] Make the add-task sheet move above the software keyboard
