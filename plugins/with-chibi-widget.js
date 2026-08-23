@@ -1,0 +1,118 @@
+const { withAndroidManifest, withDangerousMod, createRunOncePlugin } = require("@expo/config-plugins");
+const fs = require("fs");
+const path = require("path");
+
+const PLUGIN_NAME = "with-chibi-widget";
+const RECEIVER = ".ChibiWidgetProvider";
+const CONFIG_ACTIVITY = ".WidgetConfigActivity";
+
+function ensureComponent(components, component, name) {
+  const exists = components.some((entry) => entry.$?.["android:name"] === name);
+  if (!exists) components.push(component);
+}
+
+function withWidgetManifest(config) {
+  return withAndroidManifest(config, (manifestConfig) => {
+    const application = manifestConfig.modResults.manifest.application?.[0];
+    if (!application) throw new Error("Android application manifest entry was not found.");
+
+    application.receiver = application.receiver ?? [];
+    ensureComponent(application.receiver, {
+      $: {
+        "android:name": RECEIVER,
+        "android:label": "Momo Companion",
+        "android:exported": "false",
+      },
+      "intent-filter": [{
+        action: [
+          { $: { "android:name": "android.appwidget.action.APPWIDGET_UPDATE" } },
+          { $: { "android:name": "android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" } },
+        ],
+      }],
+      "meta-data": [{
+        $: {
+          "android:name": "android.appwidget.provider",
+          "android:resource": "@xml/chibi_widget_info",
+        },
+      }],
+    }, RECEIVER);
+
+    application.activity = application.activity ?? [];
+    ensureComponent(application.activity, {
+      $: {
+        "android:name": CONFIG_ACTIVITY,
+        "android:exported": "false",
+        "android:label": "Momo Companion",
+      },
+      "intent-filter": [{
+        action: [{ $: { "android:name": "android.appwidget.action.APPWIDGET_CONFIGURE" } }],
+      }],
+    }, CONFIG_ACTIVITY);
+
+    return manifestConfig;
+  });
+}
+
+function writeTemplate(sourcePath, destinationPath, androidPackage) {
+  const template = fs.readFileSync(sourcePath, "utf8");
+  fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+  fs.writeFileSync(destinationPath, template.replaceAll("__CHIBI_WIDGET_PACKAGE__", androidPackage));
+}
+
+function copyDirectory(sourcePath, destinationPath) {
+  fs.mkdirSync(destinationPath, { recursive: true });
+  fs.cpSync(sourcePath, destinationPath, { recursive: true, force: true });
+}
+
+function addPackageToMainApplication(mainApplicationPath, androidPackage) {
+  if (!fs.existsSync(mainApplicationPath)) return;
+  let source = fs.readFileSync(mainApplicationPath, "utf8");
+  if (source.includes("ChibiWidgetPackage")) return;
+
+  const packageImport = `import ${androidPackage}.ChibiWidgetPackage`;
+  if (source.includes("import com.facebook.react.PackageList")) {
+    source = source.replace("import com.facebook.react.PackageList", `import com.facebook.react.PackageList\n${packageImport}`);
+  } else {
+    source = `${packageImport}\n${source}`;
+  }
+
+  const packagesExpression = "PackageList(this).packages.apply {";
+  if (!source.includes(packagesExpression)) {
+    throw new Error("Unable to register ChibiWidgetPackage in MainApplication.kt; Expo template structure changed.");
+  }
+  source = source.replace(packagesExpression, `${packagesExpression}\n      add(ChibiWidgetPackage())`);
+  fs.writeFileSync(mainApplicationPath, source);
+}
+
+function withChibiWidget(config) {
+  config = withWidgetManifest(config);
+  config = withDangerousMod(config, ["android", async (modConfig) => {
+    const androidPackage = modConfig.android?.package;
+    if (!androidPackage) throw new Error("An Android package is required to generate the chibi widget.");
+
+    const projectRoot = modConfig.modRequest.projectRoot;
+    const androidRoot = modConfig.modRequest.platformProjectRoot;
+    const nativeSource = path.join(projectRoot, "native-widget", "android");
+    const appMain = path.join(androidRoot, "app", "src", "main");
+    const kotlinDirectory = path.join(appMain, "java", ...androidPackage.split("."));
+
+    ["ChibiWidgetModule.kt", "ChibiWidgetPackage.kt", "ChibiWidgetProvider.kt", "WidgetConfigActivity.kt"].forEach((file) => {
+      writeTemplate(path.join(nativeSource, "kotlin", file), path.join(kotlinDirectory, file), androidPackage);
+    });
+    copyDirectory(path.join(nativeSource, "res"), path.join(appMain, "res"));
+
+    const drawableDirectory = path.join(appMain, "res", "drawable-nodpi");
+    fs.mkdirSync(drawableDirectory, { recursive: true });
+    const fallbackAsset = path.join(projectRoot, "assets", "chibi", "idle.png");
+    ["idle", "happy", "love", "sleepy", "excited", "shy", "sad"].forEach((mood) => {
+      const source = path.join(projectRoot, "assets", "chibi", `${mood}.png`);
+      fs.copyFileSync(fs.existsSync(source) ? source : fallbackAsset, path.join(drawableDirectory, `chibi_${mood}.png`));
+    });
+
+    addPackageToMainApplication(path.join(kotlinDirectory, "MainApplication.kt"), androidPackage);
+    return modConfig;
+  }]);
+  return config;
+}
+
+module.exports = createRunOncePlugin(withChibiWidget, PLUGIN_NAME, "1.0.0");

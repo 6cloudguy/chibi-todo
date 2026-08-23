@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/chibi_widget_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="12dp">
+    <ImageView
+        android:id="@+id/widget_chibi_image"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:contentDescription="Chibi companion" />
+    <TextView
+        android:id="@+id/widget_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="#4C2D38"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/widget_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#7A5761"
+        android:textSize="13sp" />
+    <TextView
+        android:id="@+id/widget_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#8C6872"
+        android:textSize="12sp" />
+    <TextView
+        android:id="@+id/widget_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="#B27A87"
+        android:textSize="11sp" />
+</LinearLayout>
