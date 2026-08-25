@@ -47,6 +47,11 @@ class ChibiWidgetModule(reactContext: ReactApplicationContext) : ReactContextBas
   }
 
   @ReactMethod
+  fun isLauncherUsageAccessGranted(promise: Promise) {
+    promise.resolve(MomoOverlayService.hasUsageAccess(reactApplicationContext))
+  }
+
+  @ReactMethod
   fun isDesktopPetEnabled(promise: Promise) {
     promise.resolve(reactApplicationContext.getSharedPreferences(ChibiWidgetProvider.PREFERENCES, 0).getBoolean(MomoOverlayService.OVERLAY_ENABLED, false))
   }
@@ -59,6 +64,17 @@ class ChibiWidgetModule(reactContext: ReactApplicationContext) : ReactContextBas
       promise.resolve(null)
     } catch (exception: Exception) {
       promise.reject("OVERLAY_PERMISSION_SETTINGS_FAILED", exception)
+    }
+  }
+
+  @ReactMethod
+  fun openLauncherUsageAccessSettings(promise: Promise) {
+    try {
+      val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      reactApplicationContext.startActivity(intent)
+      promise.resolve(null)
+    } catch (exception: Exception) {
+      promise.reject("USAGE_ACCESS_SETTINGS_FAILED", exception)
     }
   }
 

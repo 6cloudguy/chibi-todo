@@ -54,7 +54,7 @@ function withWidgetManifest(config) {
     }, `${androidPackage}.MomoOverlayService`);
 
     const permissions = manifestConfig.modResults.manifest["uses-permission"] ?? [];
-    ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"].forEach((permission) => {
+    ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.FOREGROUND_SERVICE_SPECIAL_USE", "android.permission.PACKAGE_USAGE_STATS"].forEach((permission) => {
       if (!permissions.some((item) => item.$?.["android:name"] === permission)) permissions.push({ $: { "android:name": permission } });
     });
     manifestConfig.modResults.manifest["uses-permission"] = permissions;
